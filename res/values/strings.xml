@@ -3,14 +3,26 @@
 
     <!-- Common -->
     <string name="app_name">NFC App Launcher</string>
-        
-    <!-- Activity -->
-    <string name="app_header">NFC App Launcher helps you programming your NFC tags to launch an application.\nThis is working with Android 4.0 (Ice Cream Sandwich) and higher.\n\nEnter an application package name:</string>
     <string name="button_write">Write NFC Tag</string>
+    <string name="lock_title">Lock Tag</string>
+        
+    <!-- Main Activity -->
+    <string name="app_header">NFC App Launcher helps you programming your NFC tags to launch an application.\nThis is working with Android 4.0 (Ice Cream Sandwich) and higher.\n\nEnter an application package name:</string>
     <string name="help_toast">Bring your phone close to a NFC tag to overwrite it.</string>
+    <string name="menu_item_custom">Custom tag</string>
 
     <!-- Error messages -->
     <string name="error_success">Tag has been written! </string>
     <string name="error_fail">Write operation Failed! </string>
+    
+    <!-- Custom Tag fragment LevelUp-->
+    <string name="ctf_lu_bw_head">Create a tag for Beautiful Widgets</string>
+    <string name="ctf_lu_bw_activated">Activateds</string>
+    <string name="ctf_lu_bw_skin1_head">Add a first skin</string>
+    <string name="ctf_lu_bw_skin2_head">Add a second skin</string>
+    <string name="ctf_lu_bw_skin3_head">Add a third skin</string>
+    <string name="ctf_lu_bw_skin_id">Skin id</string>
+    <string name="ctf_lu_bw_skin_name">Skin name</string>
+    <string name="ctf_lu_bw_skin_type">Skin type</string>
 
 </resources>

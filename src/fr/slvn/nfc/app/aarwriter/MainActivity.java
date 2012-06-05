@@ -1,4 +1,3 @@
-
 package fr.slvn.nfc.app.aarwriter;
 
 import android.app.Activity;
@@ -10,132 +9,147 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
+import fr.slvn.nfc.app.aarwriter.custom.CustomTagActivity;
 import fr.slvn.nfc.app.aarwriter.tools.NfcUtils;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
-    // Static
-    private static final String EXTRA_PACKAGE_NAME = "package_name";
+	// Static
+	private static final String EXTRA_PACKAGE_NAME = "package_name";
 
-    // Views
-    private Button mButton;
-    private EditText mEditText;
-    private ProgressBar mProgressBar;
+	// Views
+	private Button mButton;
+	private EditText mEditText;
+	private ProgressBar mProgressBar;
 
-    // Utils
-    private NfcAdapter mNfcAdapter;
-    private IntentFilter[] mWaitTagFilters = new IntentFilter[] {
-            new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
-    };
+	// Utils
+	private NfcAdapter mNfcAdapter;
+	private IntentFilter[] mWaitTagFilters = new IntentFilter[] { new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED) };
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.main_progress);
-        mEditText = (EditText) findViewById(R.id.edit_package);
-        mButton = (Button) findViewById(R.id.button_write);
+		mProgressBar = (ProgressBar) findViewById(R.id.main_progress);
+		mEditText = (EditText) findViewById(R.id.edit_package);
+		mButton = (Button) findViewById(R.id.button_write);
 
-        mButton.setOnClickListener(this);
+		mButton.setOnClickListener(this);
 
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
-    }
+		mNfcAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
+	}
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+	@Override
+	protected void onPause() {
+		super.onPause();
 
-        unFreezeUi();
-    }
+		unFreezeUi();
+	}
 
-    public void onClick(View v) {
-        if (v == mButton) {
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu_main, menu);
+		return true;
+	}
 
-            String packageName = retrievePackageName();
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.mi_custom) {
+			CustomTagActivity.launchActivity(this);
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
-            if (packageName != null) {
-                freezeUi();
-                Toast.makeText(this, getString(R.string.help_toast), Toast.LENGTH_LONG).show();
-                mNfcAdapter.enableForegroundDispatch(this, getPendingIntent(packageName),
-                        mWaitTagFilters, null);
-            }
-        }
-    }
+	public void onClick(View v) {
+		if (v == mButton) {
 
-    private String retrievePackageName() {
-        String packageName = mEditText.getText().toString();
+			String packageName = retrievePackageName();
 
-        if (TextUtils.isEmpty(packageName))
-            return null;
+			if (packageName != null) {
+				freezeUi();
+				Toast.makeText(this, getString(R.string.help_toast), Toast.LENGTH_LONG).show();
+				mNfcAdapter.enableForegroundDispatch(this, getPendingIntent(packageName), mWaitTagFilters, null);
+			}
+		}
+	}
 
-        return packageName.replaceAll(" ", "");
-    }
+	private String retrievePackageName() {
+		String packageName = mEditText.getText().toString();
 
-    private PendingIntent getPendingIntent(String packageName) {
-        Intent intent = new Intent(this, getClass());
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        intent.putExtra(EXTRA_PACKAGE_NAME, packageName);
-        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-    }
+		if (TextUtils.isEmpty(packageName))
+			return null;
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
-            String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
-            Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            writeApplicationRecordOnTag(packageName, tag);
-        }
-    }
+		return packageName.replaceAll(" ", "");
+	}
 
-    private void writeApplicationRecordOnTag(String packageName, Tag tag) {
-        NdefMessage msg = NfcUtils.getApplicationRecord(packageName);
-        writeNdefMessageToTag(msg, tag);
-        unFreezeUi();
-    }
+	private PendingIntent getPendingIntent(String packageName) {
+		Intent intent = new Intent(this, getClass());
+		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		intent.putExtra(EXTRA_PACKAGE_NAME, packageName);
+		return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+	}
 
-    private void writeNdefMessageToTag(NdefMessage message, Tag tag) {
-        try {
-            NfcUtils.writeTag(message, tag);
-            printWritingResult(true, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            printWritingResult(false, e);
-        }
-    }
+	@Override
+	protected void onNewIntent(Intent intent) {
+		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
+			String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+			Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+			writeApplicationRecordOnTag(packageName, tag);
+		}
+	}
 
-    private void printWritingResult(boolean result, Exception exception) {
-        Toast.makeText(this, getErrorMessage(result, exception), Toast.LENGTH_LONG).show();
-    }
+	private void writeApplicationRecordOnTag(String packageName, Tag tag) {
+		NdefMessage msg = NfcUtils.getApplicationRecord(packageName);
+		writeNdefMessageToTag(msg, tag);
+		unFreezeUi();
+	}
 
-    private String getErrorMessage(boolean result, Exception exception) {
+	private void writeNdefMessageToTag(NdefMessage message, Tag tag) {
+		try {
+			NfcUtils.writeTag(message, tag);
+			printWritingResult(true, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+			printWritingResult(false, e);
+		}
+	}
 
-        StringBuilder sb = new StringBuilder();
+	private void printWritingResult(boolean result, Exception exception) {
+		Toast.makeText(this, getErrorMessage(result, exception), Toast.LENGTH_LONG).show();
+	}
 
-        if (result)
-            sb.append(getString(R.string.error_success));
-        else
-            sb.append(getString(R.string.error_fail));
+	private String getErrorMessage(boolean result, Exception exception) {
 
-        if (exception != null) {
-            sb.append(exception.getMessage());
-        }
+		StringBuilder sb = new StringBuilder();
 
-        return sb.toString();
-    }
+		if (result)
+			sb.append(getString(R.string.error_success));
+		else
+			sb.append(getString(R.string.error_fail));
 
-    private void freezeUi() {
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
+		if (exception != null) {
+			sb.append(exception.getMessage());
+		}
 
-    private void unFreezeUi() {
-        mProgressBar.setVisibility(View.INVISIBLE);
-    }
+		return sb.toString();
+	}
+
+	private void freezeUi() {
+		mProgressBar.setVisibility(View.VISIBLE);
+	}
+
+	private void unFreezeUi() {
+		mProgressBar.setVisibility(View.INVISIBLE);
+	}
 
 }

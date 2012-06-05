@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="typelist">
+        <item >Weather</item>
+        <item >Toggle</item>
+        <item >SuperClock</item>
+        <item >Battery</item>
+    </string-array>
+    <string-array name="custom_fragments_list">
+        <item >Beautiful Widgets</item>
+        <item >Plume</item>
+    </string-array>
+    
+</resources>
