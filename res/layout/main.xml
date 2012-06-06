@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:gravity="center_horizontal" >
 
     <TextView
         android:layout_width="fill_parent"
@@ -20,6 +21,24 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/button_write" />
+
+    <LinearLayout
+        android:id="@+id/main_lock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/main_lock_id_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/lock_title" />
+
+        <CheckBox
+            android:id="@+id/main_lock_id_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/main_progress"

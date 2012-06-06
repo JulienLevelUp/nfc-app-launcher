@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import fr.slvn.nfc.app.aarwriter.custom.CustomTagActivity;
 import fr.slvn.nfc.app.aarwriter.tools.NfcUtils;
 
 public class MainActivity extends Activity implements View.OnClickListener {
+	protected static final String EXTRA_MAKE_READONLY = "make_readonly";
 
 	// Static
 	private static final String EXTRA_PACKAGE_NAME = "package_name";
@@ -29,6 +31,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	private Button mButton;
 	private EditText mEditText;
 	private ProgressBar mProgressBar;
+	private CheckBox mCheckBoxReadOnly;
 
 	// Utils
 	private NfcAdapter mNfcAdapter;
@@ -42,8 +45,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		mProgressBar = (ProgressBar) findViewById(R.id.main_progress);
 		mEditText = (EditText) findViewById(R.id.edit_package);
 		mButton = (Button) findViewById(R.id.button_write);
-
 		mButton.setOnClickListener(this);
+		mCheckBoxReadOnly = (CheckBox) findViewById(R.id.main_lock_id_lock);
 
 		mNfcAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
 	}
@@ -78,7 +81,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 			if (packageName != null) {
 				freezeUi();
 				Toast.makeText(this, getString(R.string.help_toast), Toast.LENGTH_LONG).show();
-				mNfcAdapter.enableForegroundDispatch(this, getPendingIntent(packageName), mWaitTagFilters, null);
+				boolean makeReadOnly = mCheckBoxReadOnly.isChecked();
+				mNfcAdapter.enableForegroundDispatch(this, getPendingIntent(packageName, makeReadOnly), mWaitTagFilters, null);
 			}
 		}
 	}
@@ -92,10 +96,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
 		return packageName.replaceAll(" ", "");
 	}
 
-	private PendingIntent getPendingIntent(String packageName) {
+	private PendingIntent getPendingIntent(String packageName, boolean makeReadOnly) {
 		Intent intent = new Intent(this, getClass());
 		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		intent.putExtra(EXTRA_PACKAGE_NAME, packageName);
+		intent.putExtra(EXTRA_MAKE_READONLY, makeReadOnly);
 		return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 	}
 
@@ -103,20 +108,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
 	protected void onNewIntent(Intent intent) {
 		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 			String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+			boolean makeReadOnly = intent.getBooleanExtra(EXTRA_MAKE_READONLY, false);
 			Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-			writeApplicationRecordOnTag(packageName, tag);
+			writeApplicationRecordOnTag(packageName, tag, makeReadOnly);
 		}
 	}
 
-	private void writeApplicationRecordOnTag(String packageName, Tag tag) {
+	private void writeApplicationRecordOnTag(String packageName, Tag tag, boolean makeReadOnly) {
 		NdefMessage msg = NfcUtils.getApplicationRecord(packageName);
-		writeNdefMessageToTag(msg, tag);
+		writeNdefMessageToTag(msg, tag,makeReadOnly);
 		unFreezeUi();
 	}
 
-	private void writeNdefMessageToTag(NdefMessage message, Tag tag) {
+	private void writeNdefMessageToTag(NdefMessage message, Tag tag, boolean makeReadOnly) {
 		try {
-			NfcUtils.writeTag(message, tag, false);
+			NfcUtils.writeTag(message, tag, makeReadOnly);
 			printWritingResult(true, null);
 		} catch (Exception e) {
 			e.printStackTrace();
