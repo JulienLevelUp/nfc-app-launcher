@@ -13,6 +13,7 @@ import android.nfc.NdefRecord;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NdefFormatable;
+import android.util.Log;
 import fr.slvn.nfc.app.aarwriter.custom.Skin;
 
 public class NfcUtils {
@@ -21,12 +22,19 @@ public class NfcUtils {
 		return new NdefMessage(new NdefRecord[] { NdefRecord.createApplicationRecord(packageName) });
 	}
 
-	public static void writeTag(NdefMessage message, Tag tag) throws Exception {
+	public static void writeTag(NdefMessage message, Tag tag, boolean makeReadOnly) throws Exception {
 		Ndef ndef = Ndef.get(tag);
 		if (ndef != null) {
 			writeInNdef(message, ndef);
 		} else {
 			formatNdef(message, tag);
+		}
+		if (makeReadOnly) {
+			try {
+				ndef.makeReadOnly();
+			} catch (Exception e) {
+				Log.e("Exception", e.getClass().toString() + ": " + e.getMessage());
+			}
 		}
 	}
 
