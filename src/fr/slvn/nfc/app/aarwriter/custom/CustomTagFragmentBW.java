@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -31,6 +32,8 @@ public class CustomTagFragmentBW extends CustomFragmentAbstract implements OnCli
 	private EditText mSkin1Name;
 	private EditText mSkin1Id;
 	private Button mButtonPreloaded;
+	private CheckBox mCheckBoxReadOnly;
+
 	private String[] available_skins;
 	private String[] available_skins_infos;
 
@@ -46,10 +49,11 @@ public class CustomTagFragmentBW extends CustomFragmentAbstract implements OnCli
 		mProgressBar.setVisibility(View.VISIBLE);
 	}
 
-	private PendingIntent getPendingIntent(Skin[] skins) {
+	private PendingIntent getPendingIntent(Skin[] skins, boolean makeReadOnly) {
 		Intent intent = new Intent(getActivity(), getActivity().getClass());
 		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		intent.putExtra(EXTRA_JSON_MESSAGE, NfcUtils.getBWJsonMessage(skins));
+		intent.putExtra(EXTRA_MAKE_READONLY, makeReadOnly);
 		return PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
 	}
 
@@ -61,7 +65,8 @@ public class CustomTagFragmentBW extends CustomFragmentAbstract implements OnCli
 			if (skins != null && skins.length > 0) {
 				freezeUi();
 				Toast.makeText(getActivity(), getString(R.string.help_toast), Toast.LENGTH_LONG).show();
-				mNfcAdapter.enableForegroundDispatch(getActivity(), getPendingIntent(skins), mWaitTagFilters, null);
+				boolean makeReadOnly = mCheckBoxReadOnly.isChecked();
+				mNfcAdapter.enableForegroundDispatch(getActivity(), getPendingIntent(skins, makeReadOnly), mWaitTagFilters, null);
 			}
 		} else if (v == mButtonPreloaded) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -101,7 +106,7 @@ public class CustomTagFragmentBW extends CustomFragmentAbstract implements OnCli
 		mSkin1Name.setText(skinInfos[2]);
 		mSkin1Id.setText(skinInfos[1]);
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		available_skins = getResources().getStringArray(R.array.available_skins);
@@ -117,6 +122,7 @@ public class CustomTagFragmentBW extends CustomFragmentAbstract implements OnCli
 		mButton.setOnClickListener(this);
 		mButtonPreloaded = (Button) view.findViewById(R.id.ctf_lu_bw_button_preloaded);
 		mButtonPreloaded.setOnClickListener(this);
+		mCheckBoxReadOnly = (CheckBox) view.findViewById(R.id.ctf_lu_bw_lock_id_lock);
 
 		mSkin1Type = (Spinner) view.findViewById(R.id.ctf_lu_bw_skin1_type_content);
 		mSkin1Name = (EditText) view.findViewById(R.id.ctf_lu_bw_skin1_name_content);
@@ -138,8 +144,9 @@ public class CustomTagFragmentBW extends CustomFragmentAbstract implements OnCli
 	public void onNewIntent(Intent intent) {
 		if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
 			String jsonMessage = intent.getStringExtra(EXTRA_JSON_MESSAGE);
+			boolean makeReadOnly = intent.getBooleanExtra(EXTRA_MAKE_READONLY, false);
 			Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-			writeApplicationRecordOnTag(jsonMessage, tag);
+			writeApplicationRecordOnTag(jsonMessage, tag, makeReadOnly);
 		}
 	}
 
@@ -184,9 +191,9 @@ public class CustomTagFragmentBW extends CustomFragmentAbstract implements OnCli
 		mProgressBar.setVisibility(View.INVISIBLE);
 	}
 
-	private void writeApplicationRecordOnTag(String jsonMessage, Tag tag) {
+	private void writeApplicationRecordOnTag(String jsonMessage, Tag tag, boolean makeReadOnly) {
 		NdefMessage msg = NfcUtils.getBWMessage(jsonMessage);
-		writeNdefMessageToTag(msg, tag);
+		writeNdefMessageToTag(msg, tag, makeReadOnly);
 		unFreezeUi();
 	}
 

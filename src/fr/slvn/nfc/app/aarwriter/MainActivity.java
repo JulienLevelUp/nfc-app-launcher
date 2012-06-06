@@ -116,7 +116,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 	private void writeNdefMessageToTag(NdefMessage message, Tag tag) {
 		try {
-			NfcUtils.writeTag(message, tag);
+			NfcUtils.writeTag(message, tag, false);
 			printWritingResult(true, null);
 		} catch (Exception e) {
 			e.printStackTrace();

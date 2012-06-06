@@ -68,7 +68,7 @@
                 android:text="@string/lock_title" />
 
             <CheckBox
-                android:id="@+id/ctf_lu_bw_lock_id_content"
+                android:id="@+id/ctf_lu_bw_lock_id_lock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

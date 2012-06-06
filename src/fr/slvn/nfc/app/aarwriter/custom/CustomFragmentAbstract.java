@@ -12,6 +12,7 @@ import android.nfc.Tag;
 import android.widget.Toast;
 
 public abstract class CustomFragmentAbstract extends Fragment {
+	protected static final String EXTRA_MAKE_READONLY = "make_readonly";
 
 	// Utils
 	protected IntentFilter[] mWaitTagFilters = new IntentFilter[] { new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED) };
@@ -25,9 +26,9 @@ public abstract class CustomFragmentAbstract extends Fragment {
 
 	public abstract void onNewIntent(Intent intent);
 
-	protected void writeNdefMessageToTag(NdefMessage message, Tag tag) {
+	protected void writeNdefMessageToTag(NdefMessage message, Tag tag, boolean makeReadOnly) {
 		try {
-			NfcUtils.writeTag(message, tag);
+			NfcUtils.writeTag(message, tag, makeReadOnly);
 			printWritingResult(true, null);
 		} catch (Exception e) {
 			e.printStackTrace();
