@@ -15,7 +15,7 @@
     <string name="error_success">Tag has been written! </string>
     <string name="error_fail">Write operation Failed! </string>
     
-    <!-- Custom Tag fragment LevelUp-->
+    <!-- Custom Tag fragment Beautiful Widgets -->
     <string name="ctf_lu_bw_head">Create a tag for Beautiful Widgets</string>
     <string name="ctf_lu_bw_activated">Activateds</string>
     <string name="ctf_lu_bw_skin1_head">Add a first skin</string>
@@ -24,5 +24,11 @@
     <string name="ctf_lu_bw_skin_id">Skin id</string>
     <string name="ctf_lu_bw_skin_name">Skin name</string>
     <string name="ctf_lu_bw_skin_type">Skin type</string>
+    <string name="ctf_lu_bw_button_preloaded">Preloaded</string>
+    <string name="ctf_lu_bw_select_skin">Select a skin</string>
+    
+    <!-- Custom Tag fragment Plume-->
+    <string name="ctf_lu_plume_head">Create a tag for Plume</string>
+    <string name="ctf_lu_plume_profile_name">Profil : </string>
 
 </resources>

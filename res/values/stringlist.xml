@@ -1,14 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string-array name="typelist">
-        <item >Weather</item>
-        <item >Toggle</item>
-        <item >SuperClock</item>
-        <item >Battery</item>
+        <item>Weather</item>
+        <item>Toggle</item>
+        <item>SuperClock</item>
+        <item>Battery</item>
     </string-array>
     <string-array name="custom_fragments_list">
-        <item >Beautiful Widgets</item>
-        <item >Plume</item>
+        <item>Beautiful Widgets</item>
+        <item>Plume</item>
     </string-array>
-    
+    <string-array name="available_skins">
+        <item>SuperClock Plume </item>
+        <item>Battery Plume </item>
+        <item>Weather Plume </item>
+        <item>Toggle Plume </item>
+        <item>SuperClock LevelUp Studio </item>
+        <item>SuperClock LevelUp Studio Blue </item>
+        <item>SuperClock LevelUp Studio Green </item>
+        <item>SuperClock LevelUp Studio Grey </item>
+        <item>Battery LevelUp Studio </item>
+        <item>Battery LevelUp Studio Blue </item>
+        <item>Battery LevelUp Studio Gray </item>
+        <item>Battery LevelUp Studio Green </item>
+        <item>Weather LevelUp Studio </item>
+        <item>Battery PETI </item>
+        <item>Toggle PETI Black </item>
+        <item>Toggle PETI Blue </item>
+        <item>Toggle PETI Gray </item>
+        <item>Toggle PETI Green </item>
+        <item>Toggle PETI Light </item>
+        <item>Toggle PETI Red </item>
+        <item>Toggle PETI Yellow </item>
+        <item>SuperClock PETI Blue </item>
+        <item>SuperClock PETI Green </item>
+        <item>SuperClock PETI Red </item>
+        <item>SuperClock PETI Yellow </item>
+        <item>Weather PETI </item>
+        <item>Toggle LevelUp Studio </item>
+        <item>Toggle Plume Yellow </item>
+        <item>Toggle Plume Grey </item>
+        <item>Battery Google IO </item>
+        <item>SuperClock Google IO Blue </item>
+        <item>SuperClock Google IO Yellow </item>
+        <item>SuperClock Google IO Dark </item>
+        <item>SuperClock Google IO Green </item>
+        <item>SuperClock Google IO Light </item>
+        <item>SuperClock Google IO </item>
+        <item>Toggle Google IO </item>
+        <item>Weather Google IO </item>
+    </string-array>
+    <!-- Type order HOME, WEATHER, TOGGLE, SUPERCLOCK, BATTERY -->
+    <string-array name="available_skins_infos">
+        <item>3#1653#plume</item>
+        <item>4#1654#plume</item>
+        <item>1#1655#plume</item>
+        <item>2#1661#plume</item>
+        <item>3#1662#levelup-studio</item>
+        <item>3#1663#levelup-studio-blue</item>
+        <item>3#1664#levelup-studio-green</item>
+        <item>3#1665#levelup-studio-grey</item>
+        <item>4#1666#levelup-studio</item>
+        <item>4#1668#levelup-studio-blue</item>
+        <item>4#1669#levelup-studio-gray</item>
+        <item>4#1671#levelup-studio-green</item>
+        <item>1#1673#levelup-studio</item>
+        <item>4#1674#peti</item>
+        <item>2#1676#peti-black</item>
+        <item>2#1677#peti-blue</item>
+        <item>2#1678#peti-gray</item>
+        <item>2#1679#peti-green</item>
+        <item>2#1680#peti-light</item>
+        <item>2#1681#peti-red</item>
+        <item>2#1682#peti-yellow</item>
+        <item>3#1683#peti-blue</item>
+        <item>3#1684#peti-green</item>
+        <item>3#1685#peti-red</item>
+        <item>3#1686#peti-yellow</item>
+        <item>1#1687#peti</item>
+        <item>2#1688#levelup-studio</item>
+        <item>2#1689#plume-yellow</item>
+        <item>2#1690#plume-grey</item>
+        <item>4#1691#google-io</item>
+        <item>3#1692#google-io-blue</item>
+        <item>3#1693#google-io-yellow</item>
+        <item>3#1694#google-io-dark</item>
+        <item>3#1695#google-io-green</item>
+        <item>3#1696#google-io-light</item>
+        <item>3#1697#google-io</item>
+        <item>2#1698#google-io</item>
+        <item>1#1699#google-io</item>
+    </string-array>
+
 </resources>

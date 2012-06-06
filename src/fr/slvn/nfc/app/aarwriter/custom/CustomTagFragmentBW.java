@@ -1,10 +1,9 @@
 package fr.slvn.nfc.app.aarwriter.custom;
 
-import android.app.Activity;
-import android.app.Fragment;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
@@ -14,17 +13,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import fr.slvn.nfc.app.aarwriter.R;
 import fr.slvn.nfc.app.aarwriter.custom.Skin.SkinType;
 import fr.slvn.nfc.app.aarwriter.tools.NfcUtils;
 
-public class CustomTagFragmentBW extends InternFragment implements OnClickListener {
+public class CustomTagFragmentBW extends CustomFragmentAbstract implements OnClickListener {
 
 	private static final String EXTRA_JSON_MESSAGE = "json_message";
 	private Button mButton;
@@ -33,6 +30,9 @@ public class CustomTagFragmentBW extends InternFragment implements OnClickListen
 	private Spinner mSkin1Type;
 	private EditText mSkin1Name;
 	private EditText mSkin1Id;
+	private Button mButtonPreloaded;
+	private String[] available_skins;
+	private String[] available_skins_infos;
 
 	// private Spinner mSkin2Type;
 	// private EditText mSkin2Name;
@@ -42,28 +42,8 @@ public class CustomTagFragmentBW extends InternFragment implements OnClickListen
 	// private TextView mSkin2IdTitle;
 	// private CheckBox mSkin2Activated;
 
-	// Utils
-	private NfcAdapter mNfcAdapter;
-	private IntentFilter[] mWaitTagFilters = new IntentFilter[] { new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED) };
-
 	private void freezeUi() {
 		mProgressBar.setVisibility(View.VISIBLE);
-	}
-
-	private String getErrorMessage(boolean result, Exception exception) {
-
-		StringBuilder sb = new StringBuilder();
-
-		if (result)
-			sb.append(getString(R.string.error_success));
-		else
-			sb.append(getString(R.string.error_fail));
-
-		if (exception != null) {
-			sb.append(exception.getMessage());
-		}
-
-		return sb.toString();
 	}
 
 	private PendingIntent getPendingIntent(Skin[] skins) {
@@ -71,12 +51,6 @@ public class CustomTagFragmentBW extends InternFragment implements OnClickListen
 		intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		intent.putExtra(EXTRA_JSON_MESSAGE, NfcUtils.getBWJsonMessage(skins));
 		return PendingIntent.getActivity(getActivity(), 0, intent, PendingIntent.FLAG_ONE_SHOT);
-	}
-
-	@Override
-	public void onAttach(Activity activity) {
-		mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
-		super.onAttach(activity);
 	}
 
 	@Override
@@ -89,6 +63,17 @@ public class CustomTagFragmentBW extends InternFragment implements OnClickListen
 				Toast.makeText(getActivity(), getString(R.string.help_toast), Toast.LENGTH_LONG).show();
 				mNfcAdapter.enableForegroundDispatch(getActivity(), getPendingIntent(skins), mWaitTagFilters, null);
 			}
+		} else if (v == mButtonPreloaded) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			builder.setTitle(R.string.ctf_lu_bw_select_skin);
+			builder.setItems(available_skins, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int item) {
+					dialog.dismiss();
+					loadSkin(item);
+				}
+			});
+			AlertDialog alert = builder.create();
+			alert.show();
 		}
 		// else if (v == mSkin2Activated) {
 		// if (mSkin2Activated.isChecked()) {
@@ -109,12 +94,29 @@ public class CustomTagFragmentBW extends InternFragment implements OnClickListen
 		// }
 	}
 
+	protected void loadSkin(int position) {
+		String skinInfosS = available_skins_infos[position];
+		String[] skinInfos = skinInfosS.split("#");
+		mSkin1Type.setSelection(Integer.parseInt(skinInfos[0]) - 1);
+		mSkin1Name.setText(skinInfos[2]);
+		mSkin1Id.setText(skinInfos[1]);
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		available_skins = getResources().getStringArray(R.array.available_skins);
+		available_skins_infos = getResources().getStringArray(R.array.available_skins_infos);
+		super.onCreate(savedInstanceState);
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.custom_tag_fragment_levelup, null);
+		View view = inflater.inflate(R.layout.custom_tag_fragment_lu_bw, null);
 		mButton = (Button) view.findViewById(R.id.button_write);
 		mProgressBar = (ProgressBar) view.findViewById(R.id.main_progress);
 		mButton.setOnClickListener(this);
+		mButtonPreloaded = (Button) view.findViewById(R.id.ctf_lu_bw_button_preloaded);
+		mButtonPreloaded.setOnClickListener(this);
 
 		mSkin1Type = (Spinner) view.findViewById(R.id.ctf_lu_bw_skin1_type_content);
 		mSkin1Name = (EditText) view.findViewById(R.id.ctf_lu_bw_skin1_name_content);
@@ -146,10 +148,6 @@ public class CustomTagFragmentBW extends InternFragment implements OnClickListen
 		super.onPause();
 
 		unFreezeUi();
-	}
-
-	private void printWritingResult(boolean result, Exception exception) {
-		Toast.makeText(getActivity(), getErrorMessage(result, exception), Toast.LENGTH_LONG).show();
 	}
 
 	private Skin[] retrieveSkinsInformations() {
@@ -192,14 +190,9 @@ public class CustomTagFragmentBW extends InternFragment implements OnClickListen
 		unFreezeUi();
 	}
 
-	private void writeNdefMessageToTag(NdefMessage message, Tag tag) {
-		try {
-			NfcUtils.writeTag(message, tag);
-			printWritingResult(true, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-			printWritingResult(false, e);
-		}
+	@Override
+	public int getCustomId() {
+		return R.id.customfragmentid_bw;
 	}
 
 }

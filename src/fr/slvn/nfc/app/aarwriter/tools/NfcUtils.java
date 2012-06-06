@@ -82,6 +82,14 @@ public class NfcUtils {
 		return msg;
 	}
 
+	public static NdefMessage getPlumeMessage(String profileName) {
+
+		String mSharedURL = "https://twitter.com/#!/" + profileName;
+		NdefRecord record = new NdefRecord(NdefRecord.TNF_ABSOLUTE_URI, mSharedURL.getBytes(Charset.forName("US-ASCII")),
+				new byte[0], new byte[0]);
+		return new NdefMessage(new NdefRecord[] { record });
+	}
+
 	/**
 	 * Creates a custom MIME type encapsulated in an NDEF record
 	 */

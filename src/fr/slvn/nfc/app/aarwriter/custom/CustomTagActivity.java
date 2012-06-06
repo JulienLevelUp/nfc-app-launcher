@@ -3,20 +3,17 @@ package fr.slvn.nfc.app.aarwriter.custom;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.SpinnerAdapter;
-import android.widget.Toast;
 import fr.slvn.nfc.app.aarwriter.R;
 
 public class CustomTagActivity extends Activity implements OnNavigationListener {
-	private InternFragment fragment;
+	private CustomFragmentAbstract fragment;
 
 	@Override
 	protected void onCreate(Bundle arg0) {
@@ -45,15 +42,15 @@ public class CustomTagActivity extends Activity implements OnNavigationListener 
 	@Override
 	public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 		FragmentManager fragmentManager = getFragmentManager();
-		InternFragment newFragment;
+		CustomFragmentAbstract newFragment;
 		switch (itemPosition) {
 		case 0:
-			newFragment = (CustomTagFragmentBW) fragmentManager.findFragmentById(R.id.content);
+			newFragment = (CustomTagFragmentBW) fragmentManager.findFragmentByTag(R.id.customfragmentid_bw + "");
 			if (newFragment == null)
 				newFragment = new CustomTagFragmentBW();
 			break;
 		case 1:
-			newFragment = (CustomTagFragmentBW) fragmentManager.findFragmentById(R.id.content);
+			newFragment = (CustomTagFragmentPlume) fragmentManager.findFragmentByTag(R.id.customfragmentid_plume+ "");
 			if (newFragment == null)
 				newFragment = new CustomTagFragmentPlume();
 			break;
@@ -64,7 +61,7 @@ public class CustomTagActivity extends Activity implements OnNavigationListener 
 		if (fragment != null)
 			fragmentTransaction.remove(fragment);
 		fragment = newFragment;
-		fragmentTransaction.add(R.id.content, fragment);
+		fragmentTransaction.add(R.id.content, fragment, fragment.getCustomId() + "");
 		fragmentTransaction.commit();
 		return true;
 	}
